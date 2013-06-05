@@ -45,6 +45,7 @@ if ( documents.length > 0 ) {
 							"Input Start Number");
 		isNumber(num_padding);
 
+
 		//Prompt User to tell us if there should be a string appended to number.
 		var append_string =
 			prompt("Want a string appended to number? Leave blank if not.",
@@ -70,7 +71,12 @@ if ( documents.length > 0 ) {
 			}
 			fileNameNoExtension = fileNameNoExtension.join(".");
 
-			myTextRef.contents = (i + parseInt(num_start)) + append_string;
+			var padded_num = String(i + parseInt(num_start));
+			// stringified = '0' + stringified while stringified.length < digits
+			while ( padded_num.length < num_padding ) {
+				padded_num = '0' + padded_num;
+			}
+			myTextRef.contents = padded_num + append_string;
 
 			// off set the text to be in the middle
 			myTextRef.position = new Array( docRef.width / 2, docRef.height / 2 );

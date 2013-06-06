@@ -45,43 +45,41 @@ if ( documents.length > 0 ) {
 							"Input Start Number");
 		isNumber(num_padding);
 
-
 		//Prompt User to tell us if there should be a string appended to number.
 		var append_string =
 			prompt("Want a string appended to number? Leave blank if not.",
 							"(i.e. ##-string)",
 							"Input Append String");
 
-
 		// Start our Loop based on user's num_layers input
 		for (var i = 0; i < num_layers; i++) {
 
-			// Now create a text layer at the front
-			var myLayerRef = docRef.artLayers.add();
-			myLayerRef.kind = LayerKind.TEXT;
-			myLayerRef.name = (i+1) + " of " + num_layers;
-
-			var myTextRef = myLayerRef.textItem;
-
-			// strip the extension off
-			var fileNameNoExtension = docRef.name;
-			fileNameNoExtension = fileNameNoExtension.split( "." );
-			if ( fileNameNoExtension.length > 1 ) {
-				fileNameNoExtension.length--;
-			}
-			fileNameNoExtension = fileNameNoExtension.join(".");
-
+			// Pad our number first. Num based on num_start and num_layers
+			// (i.e. number within this loop, i)
 			var padded_num = String(i + parseInt(num_start));
-			// stringified = '0' + stringified while stringified.length < digits
 			while ( padded_num.length < num_padding ) {
 				padded_num = '0' + padded_num;
 			}
-			myTextRef.contents = padded_num + append_string;
 
-			// off set the text to be in the middle
-			myTextRef.position = new Array( docRef.width / 2, docRef.height / 2 );
-			myTextRef.size = 20;
+			// Select our number_layer by name
+			var num_layer_ref = docRef.artLayers.getByName("number_layer");
+			var num_layer_text = num_layer_ref.textItem;
 
+			// Select our bg_layer by name
+			var bg_layer_ref = docRef.artLayers.getByName("bg_layer");
+
+			// Duplicate our layers
+			var new_bg_layer = bg_layer_ref.duplicate(docRef, ElementPlacement.INSIDE);
+			var new_num_layer = num_layer_ref.duplicate(docRef, ElementPlacement.INSIDE);
+
+			// Replace contents of new number layer
+			new_num_layer.textItem.contents = padded_num + append_string;
+
+			// Merge new num layer down onto duplicated bg layer
+			var merged_layer = new_num_layer.merge();
+
+			// Rename newly merged layer
+			merged_layer.name = padded_num + append_string;
 		}
 
 	}
